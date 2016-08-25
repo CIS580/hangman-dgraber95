@@ -4,6 +4,7 @@ var lettersDiv = document.getElementById('letters');
 var guessesDiv = document.getElementById('guesses');
 var secretWord = "";
 var blanks = "";
+var wrongGuessCount = 0;
 
 /**
  * Initializes a new game.
@@ -55,12 +56,44 @@ function guessLetter(elm) {
   node.innerHTML = letter;
   guessesDiv.appendChild(node);
 
-  // TODO: Determine if the letter is in the secret word,
+  // Determine if the letter is in the secret word,
   // if so, reveal it in the secretWordDiv, otherwise
   // add a part to our hangman
-
-  // TODO: Determine if the game is over, and if so,
+  
+	// Check if letter is in word
+	if(secretWord.indexOf(letter.toLowerCase()) != -1){
+		// Add letter to word
+		var oldBlanks = blanks;
+		blanks = "";
+		for(i=0; i<secretWord.length; i++){
+			if(secretWord.charAt(i) == letter.toLowerCase()){
+				blanks += letter;
+			}else{
+				blanks += oldBlanks.charAt(i);
+			}
+		}
+		drawBlanks();
+	} else{
+		// draw next stick figure man
+		wrongGuessCount++;
+		drawStickMan(wrongGuessCount);
+	}
+	
+  // Determine if the game is over, and if so,
   // let the player know if they have won or lost
+	// WIN
+	if(blanks.indexOf('_') == -1){
+		document.body.innerHTML +='<div style="color:green;font-size:200%"><br>You Win!</div>';	// Print user win
+		document.body.innerHTML +='<a id="Play Again" href="#Play Again" onclick="location.reload()""><br>Play Again</a>';	// Play again button
+		document.getElementById('letters').style.pointerEvents = 'none';	// Disable letter buttons
+	}
+	// LOSE
+	else if(wrongGuessCount >= 6){
+		document.body.innerHTML +='<div style="color:red;font-size:200%"><br>You Lose...</div>';	// Print user loss
+		document.body.innerHTML +='<div style="font-size:150%"><br>Secret Word: ' + secretWord + '</div>';	// Show secret word
+		document.body.innerHTML +='<a id="Play Again" href="#Play Again" onclick="location.reload()""><br>Play Again</a>';	// Play again button
+		document.getElementById('letters').style.pointerEvents = 'none';	// Disable letter buttons
+	}
 }
 
 /**
